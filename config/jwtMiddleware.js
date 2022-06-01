@@ -13,7 +13,10 @@ const jwtMiddleware = (req, res, next) => {
 
   jwt.verify(token, secret_config.jwtsecret, (err, verifiedToken) => {
     if (err) {
-      return sendResponse(res, errResponse(baseResponse.TOKEN_INVALID));
+      return sendResponse(
+        res,
+        errResponse(baseResponse.TOKEN_VERIFICATION_FAILURE)
+      );
     }
     req.verifiedToken = verifiedToken;
     next();
