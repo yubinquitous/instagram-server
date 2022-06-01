@@ -6,7 +6,7 @@ const selectUserPosts = async (connection, userIdx) => {
     FROM post p
     JOIN postImage pi ON pi.postIdx = p.postIdx AND pi.status = 'ACTIVE'
     JOIN user u ON u.userIdx = p.userIdx
-    WHERE p.status = 'ACTIVE' AND u.userIdx = ${userIdx}
+    WHERE p.status = 'ACTIVE' AND u.userIdx = ?
     group by p.postIdx
     HAVING min(pi.postImgIdx)
     order by p.postIdx;
@@ -44,7 +44,7 @@ const selectUserPostList = async (connection, userIdx) => {
       ON f.followingIdx = p.userIdx and f.status = 'ACTIVE'
     LEFT JOIN likes pl
       ON pl.userIdx = f.followerIdx and pl.postIdx = p.postIdx
-    WHERE f.followerIdx = ${userIdx} and p.status = 'ACTIVE'
+    WHERE f.followerIdx = ? and p.status = 'ACTIVE'
     group by p.postIdx;
     `;
   const [postRows] = await connection.query(selectUserPostListQuery, userIdx);
@@ -57,7 +57,7 @@ const selectPostImgs = async (connection, postIdx) => {
       pi.imageUrl
     FROM postImage pi
     JOIN post p ON p.postIdx = pi.postIdx
-    WHERE pi.status = 'ACTIVE' and p.postIdx=${postIdx};`;
+    WHERE pi.status = 'ACTIVE' and p.postIdx= ?;`;
   const [postImgRows] = await connection.query(selectPostImgsQuery, postIdx);
   return postImgRows;
 };
@@ -78,7 +78,7 @@ const insertPost = async (connection, insertPostParams) => {
 const insertPostImg = async (connection, insertPostImgParams) => {
   const insertPostImgQuery = `
     INSERT INTO postImage(postIdx, imageUrl)
-    VALUES (?,?);
+    VALUES (?, ?);
     `;
 
   const insertPostImgRow = await connection.query(

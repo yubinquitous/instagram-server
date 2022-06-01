@@ -13,8 +13,10 @@ const crypto = require("crypto");
 const { connect } = require("http2");
 
 // Service: Create, Update, Delete 비즈니스 로직 처리
+
+// 회원 가입
 const createUser = async (email, password, nickname, name) => {
-  let connection;
+  const connection = await pool.getConnection(async (conn) => conn);
   try {
     // 이메일 중복 확인
     const emailRows = await userProvider.emailCheck(email);
@@ -29,8 +31,6 @@ const createUser = async (email, password, nickname, name) => {
 
     const insertUserInfoParams = [email, hashedPassword, nickname, name];
 
-    connection = await pool.getConnection(async (conn) => conn);
-
     const userIdResult = await userDao.insertUserInfo(
       connection,
       insertUserInfoParams
@@ -44,7 +44,7 @@ const createUser = async (email, password, nickname, name) => {
   }
 };
 
-// TODO: After 로그인 인증 방법 (JWT)
+// 로그인
 const postSignIn = async (email, password) => {
   try {
     // // 이메일 여부 확인
@@ -107,28 +107,29 @@ const postSignIn = async (email, password) => {
   }
 };
 
+// 회원 정보 수정
 const editUser = async (userIdx, nickname) => {
+  const connection = await pool.getConnection(async (conn) => conn);
   try {
-    console.log(userIdx);
-    const connection = await pool.getConnection(async (conn) => conn);
+    const editUserParams = [nickname, userIdx];
     const editUserResult = await userDao.updateUserInfo(
       connection,
-      userIdx,
-      nickname
+      editUserParams
     );
-    connection.release();
 
     return response(baseResponse.SUCCESS);
   } catch (err) {
     logger.error(`App - editUser Service error\n: ${err.message}`);
     return errResponse(baseResponse.DB_ERROR);
+  } finally {
+    connection.release();
   }
 };
 
+// 회원 탈퇴
 const modifyUserStatus = async (userIdx) => {
-  let connection;
+  const connection = await pool.getConnection(async (conn) => conn);
   try {
-    connection = await pool.getConnection(async (conn) => conn);
     await userDao.updateUserStatus(connection, userIdx);
   } catch (err) {
     logger.error(`App - modifyUserStatus Service error\n: ${err.message}`);

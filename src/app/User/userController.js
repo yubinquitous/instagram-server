@@ -371,33 +371,6 @@ const getUserByNickname = async (req, res) => {
   return sendResponse(res, response(baseResponse.SUCCESS, userByNickname));
 };
 
-// // TODO: After 로그인 인증 방법 (JWT)
-// /**
-//  * API No. 4
-//  * API Name : 로그인 API
-//  * [POST] /app/login
-//  * body : email, passsword
-//  */
-// const login = async (req, res) => {
-//   const { email, password } = req.body;
-
-//   if (!email)
-//     return sendResponse(res, errResponse(baseResponse.USER_USEREMAIL_EMPTY));
-//   if (!password)
-//     return sendResponse(res, errResponse(baseResponse.SIGNUP_PASSWORD_EMPTY));
-
-//   // userIdx와 jwt의 userIdx 비교
-//   const userIdx = userProvider.retrieveUserIdx(email);
-//   const userIdxFromJWT = req.verifiedToken.userIdx;
-//   if (userIdx !== userIdxFromJWT) {
-//     return sendResponse(res, errResponse(baseResponse.USER_ID_NOT_MATCH));
-//   }
-
-//   const signInResponse = await userService.postSignIn(email, password);
-
-//   return sendResponse(res, signInResponse);
-// };
-
 /**
  * API No. 5
  * API Name : 회원 정보 수정 API + JWT + Validation
